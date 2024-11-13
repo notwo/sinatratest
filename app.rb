@@ -2,12 +2,19 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'sinatra/bootstrap'
 
-require 'kaminari'
+require 'sinatra/flash'
+
+require 'will_paginate/view_helpers/sinatra'
+require 'will_paginate/active_record'
+
+helpers WillPaginate::Sinatra, WillPaginate::Sinatra::Helpers
 
 require 'bundler'
 Bundler.require
 
 register Sinatra::Bootstrap::Assets
+
+enable :sessions
 
 ActiveRecord::Base.establish_connection(
 	adapter: 'sqlite3',
@@ -20,12 +27,26 @@ class Estimate < ActiveRecord::Base
   validates :number, presence: true
 end
 
+STATUS_ENUM = { wait: 0, proceed: 1, finish: 2 }
+def status_string(val)
+  case val
+  when 0
+    '処理待ち'
+  when 1
+    '処理中'
+  when 2
+    '処理完了'
+  else
+    '処理待ち'
+  end
+end
+
 CSV_AU_COLUMN = 48
 
 get '/csv_test' do
-  estimates = Estimate.all
-  page = params[:page].to_i rescue 1
-  @list = estimates.page(page).reverse_order.per(10)
+  estimates = Estimate.all.order(id: :desc)
+  page = (params[:page] || 1).to_i rescue 1
+  @list = estimates.paginate(page: page, per_page: 10)
 
   erb :csv_test_index
 end
@@ -41,7 +62,7 @@ post '/csv_test_create' do
 end
 
 def proceed_single_number(request_number)
-  Estimate.create!(request_number: request_number, status: 0)
+  Estimate.create!(number: request_number, status: STATUS_ENUM[:wait])
   flash[:success] = "番号#{request_number}をリクエストしました"
 
   # delayedjobに登録
@@ -60,7 +81,7 @@ def proceed_multple_numbers(request_number_csv)
     request_numbers.push row[CSV_AU_COLUMN-1]
   end
 
-  estimates = request_numbers.uniq.map { |request_number| { request_number: request_number, status: 0, created_at: Time.current, updated_at: Time.current } }
+  estimates = request_numbers.uniq.map { |request_number| { number: request_number, status: STATUS_ENUM[:wait], created_at: Time.current, updated_at: Time.current } }
   Estimate.insert_all estimates
 
   # delayedjobに登録

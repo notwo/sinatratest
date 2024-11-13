@@ -9,36 +9,34 @@
   <body>
     <section class="container">
       <section>
-        <p class="fs-2">番号を入力するか、CSVファイルを選択してください。</span>
+        <p class="lead">番号を入力するか、CSVファイルを選択してください。</span>
       </section>
 
-<!--
-      <%# if flash[:fail] %>
-        <div class="alert alert-danger"><b><%#= flash[:fail] %></b></div>
-      <%# end %>
-      <%# if flash[:success] %>
-        <div class="alert alert-success"><b><%#= flash[:success] %></b></div>
-      <%# end %>
--->
+      <% if flash[:fail] %>
+        <div class="alert alert-danger"><b><%= flash[:fail] %></b></div>
+      <% end %>
+      <% if flash[:success] %>
+        <div class="alert alert-success"><b><%= flash[:success] %></b></div>
+      <% end %>
 
       <form action="/csv_test_create" method="post">
-        <div class="mb-3">
+        <div class="form-group">
           <label for="requestNumber" class="col-form-label fs-4">番号を入力</label>
           <input type="number" name="request_number" id="requestNumber" class="form-control" placeholder="123456">
         </div>
-        <div class="mb-3">
+        <div class="form-group">
           <input type="submit" value="登録" id="single_submit" class="btn btn-primary disabled submit">
         </div>
       </form>
 
       <hr>
 
-      <form action="/csv_test_create" method="post">
-        <div class="mb-3">
+      <form action="/csv_test_create" method="post" enctype="multipart/form-data">
+        <div class="form-group">
           <label for="requestNumberCsv" class="col-form-label fs-4">CSVファイルを選択</label>
-          <input type="file" name="request_number_csv" id="requestNumberCsv" class="form-control">
+          <input type="file" name="request_number_csv" id="requestNumberCsv" class="form-control form-control-lg">
         </div>
-        <div class="mb-3">
+        <div class="form-group">
           <input type="submit" value="登録" id="csv_submit" class="btn btn-primary disabled submit">
         </div>
       </form>
@@ -56,17 +54,18 @@
             <% @list.each do |estimate| %>
               <tr>
                 <td><%= estimate.created_at.in_time_zone('Tokyo').strftime('%Y/%m/%d %H:%M:%S') %></td>
-                <td><%= estimate.status %></td>
-                <td><%= estimate.request_number %></td>
+                <td><%= status_string(estimate.status) %></td>
+                <td><%= estimate.number %></td>
               </tr>
             <% end %>
           </tbody>
         </table>
       </div>
 
-      <%#= paginate @list, theme: 'bootstrap-5' %>
+      <%= will_paginate @list, previous_label: "&laquo;&nbsp;前", next_label: "次&nbsp;&raquo;" %>
     </section>
 
     <%= bootstrap_js %>
+    <script type="text/javascript" src="/js/index.js"></script>
   </body>
 </html>
