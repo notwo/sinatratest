@@ -1,5 +1,7 @@
+require "bundler/setup"
 require 'sinatra'
 require 'sinatra/reloader'
+require "sinatra/activerecord"
 require 'sinatra/bootstrap'
 
 require 'sinatra/flash'
@@ -16,9 +18,10 @@ register Sinatra::Bootstrap::Assets
 
 enable :sessions
 
+
 ActiveRecord::Base.establish_connection(
-	adapter: 'sqlite3',
-	database: './db/csv_test.db'
+  adapter: 'sqlite3',
+  database: './db/csv_test.db'
 )
 
 class Estimate < ActiveRecord::Base
