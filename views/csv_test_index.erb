@@ -53,7 +53,7 @@
           <tbody>
             <% @list.each do |estimate| %>
               <tr>
-                <td><%= estimate.created_at.in_time_zone('Tokyo').strftime('%Y/%m/%d %H:%M:%S') %></td>
+                <td><%= estimate.created_at.to_time(:jst).strftime('%Y/%m/%d %H:%M:%S') %></td>
                 <td><%= status_string(estimate.status) %></td>
                 <td><%= estimate.number %></td>
               </tr>

@@ -11,6 +11,8 @@ require 'will_paginate/active_record'
 
 helpers WillPaginate::Sinatra, WillPaginate::Sinatra::Helpers
 
+require_relative './jobs/record_request_job'
+
 require 'bundler'
 Bundler.require
 
@@ -47,7 +49,7 @@ end
 CSV_AU_COLUMN = 48
 
 get '/csv_test' do
-  estimates = Estimate.all.order(id: :desc)
+  estimates = Estimate.all.order(created_at: :desc)
   page = (params[:page] || 1).to_i rescue 1
   @list = estimates.paginate(page: page, per_page: 10)
 
@@ -69,18 +71,18 @@ def proceed_single_number(request_number)
   flash[:success] = "番号#{request_number}をリクエストしました"
 
   # delayedjobに登録
-  #RecordRequestJob.perform_later(request_numbers: [request_number])
+  Delayed::Job.enqueue RecordRequestJob.new(request_numbers: [request_number])
 end
 
 def proceed_multple_numbers(request_number_csv)
-  if request_number_csv.content_type != "text/csv"
+  tempfile = request_number_csv[:tempfile]
+  if File.extname(tempfile.path) != ".csv"
     flash[:fail] = "ファイル形式が異なります。CSVファイルを選択してください。"
     return
   end
 
-  file = request_number_csv.tempfile
   request_numbers = []
-  CSV.foreach(file) do |row|
+  CSV.foreach(tempfile) do |row|
     request_numbers.push row[CSV_AU_COLUMN-1]
   end
 
@@ -88,7 +90,7 @@ def proceed_multple_numbers(request_number_csv)
   Estimate.insert_all estimates
 
   # delayedjobに登録
-  #RecordRequestJob.perform_later(request_numbers: request_numbers)
+  Delayed::Job.enqueue RecordRequestJob.new(request_numbers: request_numbers)
 
-  flash[:success] = "csvファイル「#{request_number_csv.original_filename}」記載の番号をリクエストしました"
+  flash[:success] = "csvファイル「#{tempfile.path}」記載の番号をリクエストしました"
 end

@@ -1,5 +1,5 @@
 create table estimates(
-    id integer,
+    id integer PRIMARY KEY AUTOINCREMENT NOT NULL,
     number integer,
     status integer,
     created_at,

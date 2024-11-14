@@ -73,7 +73,6 @@ GEM
       sinatra (>= 1.0.0)
     sinatra-outputbuffer (0.1.0)
       sinatra (>= 1.0.a)
-    sinatra-twitter-bootstrap (2.3.4)
     sqlite3 (2.2.0-x64-mingw-ucrt)
     tilt (2.4.0)
     timeout (0.4.2)
@@ -97,7 +96,6 @@ DEPENDENCIES
   sinatra-bootstrap
   sinatra-contrib
   sinatra-flash
-  sinatra-twitter-bootstrap
   sqlite3
   tzinfo-data
   will_paginate
