@@ -8,10 +8,10 @@
   </head>
 
   <body>
-    <section class="container">
-      <section>
+    <div class="container">
+      <div>
         <p class="lead fs-2">番号を入力するか、CSVファイルを選択してください。</span>
-      </section>
+      </div>
 
       <% if flash[:fail] %>
         <div class="alert alert-danger"><b><%= flash[:fail] %></b></div>
@@ -43,6 +43,10 @@
       </form>
 
       <div class="list">
+        <div>
+          <p class="lead fs-4">リクエスト内容</span>
+        </div>
+
         <div class="d-flex mb-3 align-items-center">
           <div class="flex-child">
             <div class="current_page_count fs-5"><b>1-100件目</b></div>
@@ -64,17 +68,23 @@
           <table class="table">
             <thead>
               <tr>
-                <th scope="row">リクエスト日時</th>
-                <th scope="row">ステータス</th>
                 <th scope="row">番号</th>
+                <th scope="row">ステータス</th>
+                <th scope="row">入力ファイル名</th>
+                <th scope="row">リクエスト日時</th>
               </tr>
             </thead>
             <tbody>
               <% @list.each do |estimate| %>
                 <tr>
-                  <td><%= estimate.created_at %></td>
-                  <td><%= status_string(estimate.status) %></td>
                   <td><%= estimate.number %></td>
+                  <td><%= status_string(estimate.status) %></td>
+                  <% if estimate.csv_filename == "個別入力" %>
+                    <td><%= estimate.csv_filename %></td>
+                  <% else %>
+                    <td><a href="/download_csv?filename=<%= estimate.csv_filename %>"><%= estimate.csv_filename %></a></td>
+                  <% end %>
+                  <td><%= estimate.created_at %></td>
                 </tr>
               <% end %>
             </tbody>
@@ -89,7 +99,7 @@
 
         <%= pagy_bootstrap_nav(@pagy) %>
       </div>
-    </section>
+    </div>
 
     <script type="text/javascript" src="/js/index.js"></script>
   </body>
