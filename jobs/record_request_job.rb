@@ -1,14 +1,16 @@
 require 'csv'
 
 class RecordRequestJob
-  def initialize(request_numbers:)
+  def initialize(request_numbers:, start_time:, end_time:)
     @request_numbers = (request_numbers || [])
+    @start_time = start_time
+    @end_time = end_time
   end
 
   def perform
     return if @request_numbers.blank?
 
-    Estimate.where(number: @request_numbers, status: 0).update_all(status: 1)
+    Estimate.where(number: @request_numbers, status: 0, created_at: @start_time..@end_time).update_all(status: 1)
 
     output_dir = 'C:/Users/07k11/Desktop/work/sinatratest'
     filename = "#{output_dir}/requests_#{Time.now.in_time_zone('Tokyo').strftime('%Y%m%d%H%M%S')}.csv"
@@ -25,6 +27,6 @@ class RecordRequestJob
     result = system('python .\test.py')
     puts result
 
-    Estimate.where(number: @request_numbers, status: 1).update_all(status: 2)
+    Estimate.where(number: @request_numbers, status: 1, created_at: @start_time..@end_time).update_all(status: 2)
   end
 end

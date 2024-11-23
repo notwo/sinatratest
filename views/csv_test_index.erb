@@ -80,14 +80,10 @@
             <tbody>
               <% @list.each do |estimate| %>
                 <tr>
-                  <td><%= estimate.number %></td>
+                  <td><a href="/download_csv?filename=<%= "test.csv" %>"><%= estimate.number %></a></td>
                   <td><%= status_string(estimate.status) %></td>
-                  <% if estimate.csv_filename == "個別入力" %>
-                    <td><%= estimate.csv_filename %></td>
-                  <% else %>
-                    <td><a href="/download_csv?filename=<%= estimate.csv_filename %>"><%= estimate.csv_filename %></a></td>
-                  <% end %>
-                  <td><%= estimate.created_at %></td>
+                  <td><%= estimate.csv_filename %></td>
+                  <td><%= estimate.created_at.in_time_zone('Tokyo').strftime('%Y-%m-%d %H:%M:%S') %></td>
                 </tr>
               <% end %>
             </tbody>

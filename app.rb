@@ -82,20 +82,20 @@ get '/download_csv' do
   destination = "C:\\Users\\07k11\\Desktop\\整理中\\#{filename}"
   FileUtils.cp(src, destination)
 
-  flash[:success] = <<-MSG
-      CSVファイル「#{filename}」をダウンロードしました\n
-      #{destination}"
-  MSG
+  flash[:success] = "CSVファイル「#{filename}」をダウンロードしました"
   redirect to "/csv_test"
 end
 
 
 def proceed_single_number(request_number)
+  start_time = Time.current
   Estimate.create!(number: request_number, status: STATUS_ENUM[:wait], csv_filename: "個別入力")
+  end_time = Time.current
+
   flash[:success] = "番号「#{request_number}」をリクエストしました"
 
   # delayedjobに登録
-  Delayed::Job.enqueue RecordRequestJob.new(request_numbers: [request_number])
+  Delayed::Job.enqueue RecordRequestJob.new(request_numbers: [request_number], start_time: start_time, end_time: end_time)
 end
 
 def proceed_multple_numbers(request_number_csv)
@@ -111,11 +111,13 @@ def proceed_multple_numbers(request_number_csv)
     request_numbers.push row[CSV_AU_COLUMN-1]
   end
 
+  start_time = Time.current
   estimates = request_numbers.uniq.map { |request_number| { number: request_number, status: STATUS_ENUM[:wait], csv_filename: file["filename"], created_at: Time.current, updated_at: Time.current } }
   Estimate.insert_all estimates
+  end_time = Time.current
 
   # delayedjobに登録
-  Delayed::Job.enqueue RecordRequestJob.new(request_numbers: request_numbers)
+  Delayed::Job.enqueue RecordRequestJob.new(request_numbers: request_numbers, start_time: start_time, end_time: end_time)
 
   flash[:success] = "csvファイル「#{file["filename"]}」記載の番号をリクエストしました"
 end
