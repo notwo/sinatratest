@@ -2,24 +2,26 @@ require "bundler/setup"
 require 'sinatra'
 require 'sinatra/reloader'
 require "sinatra/activerecord"
-require 'sinatra/bootstrap'
+#require 'sinatra/bootstrap'
+require 'active_support/all'
 
 require 'sinatra/flash'
 
-require 'will_paginate/view_helpers/sinatra'
-require 'will_paginate/active_record'
+require 'pagy'
+require 'pagy/extras/array'
+require 'pagy/extras/bootstrap'
 
-helpers WillPaginate::Sinatra, WillPaginate::Sinatra::Helpers
+helpers Pagy::Frontend
+include Pagy::Backend
 
 require_relative './jobs/record_request_job'
 
 require 'bundler'
 Bundler.require
 
-register Sinatra::Bootstrap::Assets
+#register Sinatra::Bootstrap::Assets
 
 enable :sessions
-
 
 ActiveRecord::Base.establish_connection(
   adapter: 'sqlite3',
@@ -48,10 +50,14 @@ end
 
 CSV_AU_COLUMN = 48
 
+DEFAULT_VIEW_COUNT = 10#300
+
 get '/csv_test' do
   estimates = Estimate.all.order(created_at: :desc)
   page = (params[:page] || 1).to_i rescue 1
-  @list = estimates.paginate(page: page, per_page: 10)
+  @view_count = (params[:view_count] || DEFAULT_VIEW_COUNT).to_i rescue DEFAULT_VIEW_COUNT
+  Pagy::DEFAULT[:limit] = @view_count
+  @pagy, @list = pagy_array(estimates, page: page)
 
   erb :csv_test_index
 end
@@ -65,6 +71,10 @@ post '/csv_test_create' do
 
   redirect to "/csv_test"
 end
+
+get '/download_csv' do
+end
+
 
 def proceed_single_number(request_number)
   Estimate.create!(number: request_number, status: STATUS_ENUM[:wait])
@@ -92,5 +102,5 @@ def proceed_multple_numbers(request_number_csv)
   # delayedjobに登録
   Delayed::Job.enqueue RecordRequestJob.new(request_numbers: request_numbers)
 
-  flash[:success] = "csvファイル「#{tempfile.path}」記載の番号をリクエストしました"
+  flash[:success] = "csvファイル「#{tempfile[:filename]}」記載の番号をリクエストしました"
 end

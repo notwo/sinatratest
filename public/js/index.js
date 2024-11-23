@@ -29,4 +29,12 @@ window.onload = function() {
       csv_submit_button.classList.remove('disabled');
     }
   });
+
+  // ページング関連
+  let select = document.getElementById("view_count");
+  select.addEventListener('change', (event) => {
+    let target = event.target;
+    let url = window.location.origin + window.location.pathname + '?view_count=' + target.value;
+    window.location.href = url;
+  });
 };
