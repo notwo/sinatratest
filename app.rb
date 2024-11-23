@@ -56,6 +56,7 @@ DEFAULT_VIEW_COUNT = 10#300
 get '/csv_test' do
   estimates = Estimate.all.order(created_at: :desc)
   @page = (params[:page] || 1).to_i rescue 1
+  @full_count = estimates.size
   @view_count = (params[:view_count] || DEFAULT_VIEW_COUNT).to_i rescue DEFAULT_VIEW_COUNT
   Pagy::DEFAULT[:limit] = @view_count
   @pagy, @list = pagy_array(estimates, page: @page)

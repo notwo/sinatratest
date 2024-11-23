@@ -34,7 +34,7 @@ window.onload = function() {
   let select = document.getElementById("view_count");
   select.addEventListener('change', (event) => {
     let target = event.target;
-    let url = window.location.origin + window.location.pathname + '?view_count=' + target.value;
+    let url = window.location.origin + window.location.pathname + '?view_count=' + target.value + '&page=1';
     window.location.href = url;
   });
 };

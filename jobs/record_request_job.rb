@@ -6,7 +6,6 @@ class RecordRequestJob
   end
 
   def perform
-    puts @request_numbers.inspect
     return if @request_numbers.blank?
 
     Estimate.where(number: @request_numbers, status: 0).update_all(status: 1)

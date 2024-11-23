@@ -47,9 +47,12 @@
           <p class="lead fs-4">リクエスト内容</span>
         </div>
 
+        <% start_count = @view_count * (@page - 1) + 1 %>
+        <% end_count = @view_count * @page %>
+        <% end_count = end_count > @full_count ? @full_count : end_count %>
         <div class="d-flex mb-3 align-items-center">
           <div class="flex-child">
-            <div class="current_page_count fs-5"><b>1-100件目</b></div>
+            <div class="current_page_count fs-5"><b><%= @full_count %>件中 <%= start_count %> - <%= end_count %>件目</b></div>
           </div>
 
           <div class="flex-child">
@@ -93,7 +96,7 @@
 
         <div class="d-flex mb-3 align-items-center">
           <div class="flex-child">
-            <div class="fs-5"><b>1-100件目</b></div>
+            <div class="fs-5"><b><%= @full_count %>件中 <%= start_count %> - <%= end_count %>件目</b></div>
           </div>
         </div>
 
