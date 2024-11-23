@@ -30,11 +30,11 @@ window.onload = function() {
     }
   });
 
-  // ページング関連
-  let select = document.getElementById("view_count");
-  select.addEventListener('change', (event) => {
-    let target = event.target;
-    let url = window.location.origin + window.location.pathname + '?view_count=' + target.value + '&page=1';
-    window.location.href = url;
-  });
+  // ページング関連 // ←追加！！！！！！！！！
+  let select = document.getElementById("view_count"); // ←追加！！！！！！！！！
+  select.addEventListener('change', (event) => { // ←追加！！！！！！！！！
+    let target = event.target; // ←追加！！！！！！！！！
+    let url = window.location.origin + window.location.pathname + '?view_count=' + target.value + '&page=1'; // ←追加！！！！！！！！！
+    window.location.href = url; // ←追加！！！！！！！！！
+  }); // ←追加！！！！！！！！！
 };

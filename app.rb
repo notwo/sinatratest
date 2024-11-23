@@ -8,19 +8,17 @@ require 'active_support/all'
 
 require 'sinatra/flash'
 
-require 'pagy'
-require 'pagy/extras/array'
-require 'pagy/extras/bootstrap'
+require 'pagy' # ←追加！！！！！
+require 'pagy/extras/array' # ←追加！！！！！
+require 'pagy/extras/bootstrap' # ←追加！！！！！
 
-helpers Pagy::Frontend
-include Pagy::Backend
+helpers Pagy::Frontend # ←追加！！！！！
+include Pagy::Backend # ←追加！！！！！
 
 require_relative './jobs/record_request_job'
 
 require 'bundler'
 Bundler.require
-
-#register Sinatra::Bootstrap::Assets
 
 enable :sessions
 
@@ -51,15 +49,15 @@ end
 
 CSV_AU_COLUMN = 48
 
-DEFAULT_VIEW_COUNT = 10#300
+DEFAULT_VIEW_COUNT = 10#300 # ←追加！！！！！
 
 get '/csv_test' do
   estimates = Estimate.all.order(created_at: :desc)
   @page = (params[:page] || 1).to_i rescue 1
-  @full_count = estimates.size
-  @view_count = (params[:view_count] || DEFAULT_VIEW_COUNT).to_i rescue DEFAULT_VIEW_COUNT
-  Pagy::DEFAULT[:limit] = @view_count
-  @pagy, @list = pagy_array(estimates, page: @page)
+  @full_count = estimates.size # ←追加！！！！！
+  @view_count = (params[:view_count] || DEFAULT_VIEW_COUNT).to_i rescue DEFAULT_VIEW_COUNT # ←追加！！！！！
+  Pagy::DEFAULT[:limit] = @view_count # ←追加！！！！！
+  @pagy, @list = pagy_array(estimates, page: @page) # ←修正！！！！！
 
   erb :csv_test_index
 end
@@ -75,27 +73,27 @@ post '/csv_test_create' do
 end
 
 get '/download_csv' do
-  redirect to "/csv_test" if params[:filename].blank?
+  redirect to "/csv_test" if params[:filename].blank? # ←追加！！！！！
 
-  filename = params[:filename].to_s
-  src = "C:\\Users\\07k11\\Desktop\\work\\sinatratest\\#{filename}"
-  destination = "C:\\Users\\07k11\\Desktop\\整理中\\#{filename}"
-  FileUtils.cp(src, destination)
+  filename = params[:filename].to_s # ←追加！！！！！
+  src = "C:\\Users\\07k11\\Desktop\\work\\sinatratest\\#{filename}" # ←追加！！！！！
+  destination = "C:\\Users\\07k11\\Desktop\\整理中\\#{filename}" # ←追加！！！！！
+  FileUtils.cp(src, destination) # ←追加！！！！！
 
-  flash[:success] = "CSVファイル「#{filename}」をダウンロードしました"
-  redirect to "/csv_test"
+  flash[:success] = "CSVファイル「#{filename}」をダウンロードしました" # ←追加！！！！！
+  redirect to "/csv_test##{params[:id]}" # ←追加！！！！！
 end
 
 
 def proceed_single_number(request_number)
-  start_time = Time.current
+  start_time = Time.current # ←追加！！！！！
   Estimate.create!(number: request_number, status: STATUS_ENUM[:wait], csv_filename: "個別入力")
-  end_time = Time.current
+  end_time = Time.current # ←追加！！！！！
 
   flash[:success] = "番号「#{request_number}」をリクエストしました"
 
   # delayedjobに登録
-  Delayed::Job.enqueue RecordRequestJob.new(request_numbers: [request_number], start_time: start_time, end_time: end_time)
+  Delayed::Job.enqueue RecordRequestJob.new(request_numbers: [request_number], start_time: start_time, end_time: end_time) # ←修正！！！！！
 end
 
 def proceed_multple_numbers(request_number_csv)
@@ -111,13 +109,13 @@ def proceed_multple_numbers(request_number_csv)
     request_numbers.push row[CSV_AU_COLUMN-1]
   end
 
-  start_time = Time.current
-  estimates = request_numbers.uniq.map { |request_number| { number: request_number, status: STATUS_ENUM[:wait], csv_filename: file["filename"], created_at: Time.current, updated_at: Time.current } }
+  start_time = Time.current # ←追加！！！！！
+  estimates = request_numbers.uniq.map { |request_number| { number: request_number, status: STATUS_ENUM[:wait], csv_filename: file["filename"], created_at: Time.current, updated_at: Time.current } } # ←修正！！！！！
   Estimate.insert_all estimates
-  end_time = Time.current
+  end_time = Time.current # ←追加！！！！！
 
   # delayedjobに登録
-  Delayed::Job.enqueue RecordRequestJob.new(request_numbers: request_numbers, start_time: start_time, end_time: end_time)
+  Delayed::Job.enqueue RecordRequestJob.new(request_numbers: request_numbers, start_time: start_time, end_time: end_time) # ←修正！！！！！
 
   flash[:success] = "csvファイル「#{file["filename"]}」記載の番号をリクエストしました"
 end

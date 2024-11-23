@@ -2,13 +2,10 @@
 
 source "https://rubygems.org"
 
-# gem "rails"
 gem 'sinatra'
 gem "rackup"
 gem "puma"
 gem 'sinatra-contrib'
-
-#gem 'sinatra-bootstrap', require: 'sinatra/bootstrap'
 
 gem 'sinatra-flash'
 
@@ -20,8 +17,8 @@ gem 'activesupport'
 
 gem 'rake'
 
-gem 'pagy'
-gem 'pagy-extras', require: 'pagy/extras/bootstrap'
+gem 'pagy' # ←追加！！！！！
+gem 'pagy-extras', require: 'pagy/extras/bootstrap' # ←追加！！！！！
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
 
