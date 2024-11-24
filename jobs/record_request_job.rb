@@ -10,6 +10,9 @@ class RecordRequestJob
   def perform
     return if @request_numbers.blank? # ←追加！！！！！
 
+    # update_allの場合、1つずつ資料ダウンロードが完了したものから順に更新することはできない
+    # これは、見積もり取得ツール完了後に、その旨をコードで受け取ることができないため
+    # →Teamsで完了通知が飛んでおり、ユーザは最終的にそちらで状況確認できるため問題なし
     Estimate.where(number: @request_numbers, status: 0, created_at: @start_time..@end_time).update_all(status: 1) # ←修正！！！！！
 
     output_dir = 'C:/Users/07k11/Desktop/work/sinatratest'

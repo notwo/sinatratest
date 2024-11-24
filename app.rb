@@ -2,7 +2,6 @@ require "bundler/setup"
 require 'sinatra'
 require 'sinatra/reloader'
 require "sinatra/activerecord"
-#require 'sinatra/bootstrap'
 require 'fileutils'
 require 'active_support/all'
 require 'logger' # ←追加！！！！！
@@ -89,6 +88,10 @@ end
 # 以下、追加！！！！！(パス書き換えは必要)
 # APIとしてJSから呼び出し
 # 結果がダウンロードされるフォルダを開く
+# ブラウザの仕様上、aタグにリンクを張って直接ダウンロードさせること、及びJSによるダウンロード処理は困難である
+# よってRubyのコードによりファイルを直接cpするかフォルダを開くかの選択肢になるが、前者の場合はユーザにダウンロード先を選ばせることは困難であり、
+# またWindowsのフォルダ構成上必ず存在するDownloadsフォルダに移動するにしても、ユーザ名をRubyから取得できないため断念
+# よって、CSVが配置されているフォルダを開くリンクを設置するに留めるのが現実的となる
 get '/open_csv_folder' do
   reqeust_number = params[:reqeust_number].to_s
   logger.info reqeust_number
