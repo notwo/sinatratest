@@ -47,25 +47,40 @@
           <p class="lead fs-4">リクエスト内容</span>
         </div>
 
-        <% start_count = @view_count * (@page - 1) + 1 %>
-        <% end_count = @view_count * @page %>
-        <% end_count = end_count > @full_count ? @full_count : end_count %>
-        <div class="d-flex mb-3 align-items-center">
-          <div class="flex-child">
-            <div class="current_page_count fs-5"><b><%= @full_count %>件中 <%= start_count %> - <%= end_count %>件目</b></div>
-          </div>
+        <% if @full_count > 0 %>
+          <% start_count = @view_count * (@page - 1) + 1 %>
+          <% end_count = @view_count * @page %>
+          <% end_count = end_count > @full_count ? @full_count : end_count %>
+          <div class="d-flex mb-3 align-items-center">
+            <div class="flex-child">
+              <div class="current_page_count fs-5"><b><%= @full_count %>件中 <%= start_count %> - <%= end_count %>件目</b></div>
+            </div>
 
-          <div class="flex-child">
-            <select class="form-select" aria-label="Default select example" id="view_count">
-              <option value="10" <% if @view_count == 10 %>selected<% end %>> 10件</option>
-              <option value="20" <% if @view_count == 20 %>selected<% end %>> 20件</option>
-              <option value="50" <% if @view_count == 50 %>selected<% end %>> 50件</option>
-              <option value="100" <% if @view_count == 100 %>selected<% end %>>100件</option>
-              <option value="200" <% if @view_count == 200 %>selected<% end %>>200件</option>
-              <option value="300" <% if @view_count == 300 %>selected<% end %>>300件</option>
-            </select>
+            <div class="flex-child">
+              <select class="form-select" aria-label="Default select example" id="view_count">
+                <option value="10" <% if @view_count == 10 %>selected<% end %>> 10件</option>
+                <option value="20" <% if @view_count == 20 %>selected<% end %>> 20件</option>
+                <option value="50" <% if @view_count == 50 %>selected<% end %>> 50件</option>
+                <option value="100" <% if @view_count == 100 %>selected<% end %>>100件</option>
+                <option value="200" <% if @view_count == 200 %>selected<% end %>>200件</option>
+                <option value="300" <% if @view_count == 300 %>selected<% end %>>300件</option>
+              </select>
+            </div>
+
+            <div class="flex-child">
+              <form action="/csv_test?view_count=<%= @view_count %>" method="get">
+                <div class="d-flex justify-content-start">
+                  <div class="flex-child-no-vertical-margin col-12">
+                    <input type="text" name="search_word" value="<%= @search_word %>" class="form-control" placeholder="見積番号かファイル名で検索" aria-label="見積番号で検索">
+                  </div>
+                  <div class="flex-child-no-vertical-margin">
+                    <input type="submit" value="検索" class="btn btn-primary submit">
+                  </div>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
+        <% end %>
 
         <div class="mb-3">
           <table class="table">
@@ -90,11 +105,13 @@
           </table>
         </div>
 
-        <div class="d-flex mb-3 align-items-center">
-          <div class="flex-child">
-            <div class="fs-5"><b><%= @full_count %>件中 <%= start_count %> - <%= end_count %>件目</b></div>
+        <% if @full_count > 0 %>
+          <div class="d-flex mb-3 align-items-center">
+            <div class="flex-child">
+              <div class="fs-5"><b><%= @full_count %>件中 <%= start_count %> - <%= end_count %>件目</b></div>
+            </div>
           </div>
-        </div>
+        <% end %>
 
         <%= pagy_bootstrap_nav(@pagy) %>
       </div>

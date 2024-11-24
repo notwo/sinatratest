@@ -1,6 +1,9 @@
 .flex-child {
   margin: 1rem 1rem;
 }
+.flex-child-no-vertical-margin {
+  margin: 0 1rem;
+}
 
 .list {
   margin: 3rem 0;

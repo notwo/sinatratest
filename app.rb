@@ -64,8 +64,16 @@ CSV_AU_COLUMN = 48
 DEFAULT_VIEW_COUNT = 10#300 # ←追加！！！！！
 
 get '/csv_test' do
-  estimates = Estimate.all.order(created_at: :desc)
-  @pathname = "C:\\"
+  # 以下追加/修正！！！！！！
+  # ファイル名か番号で検索
+  @search_word = params[:search_word].to_s
+  if @search_word.present?
+    estimates = Estimate.where(csv_filename: @search_word).order(created_at: :desc)
+    estimates = Estimate.where(number: @search_word).order(created_at: :desc) if estimates.blank?
+  else
+    estimates = Estimate.all.order(created_at: :desc)
+  end
+
   @page = (params[:page] || 1).to_i rescue 1
   @full_count = estimates.size # ←追加！！！！！
   @view_count = (params[:view_count] || DEFAULT_VIEW_COUNT).to_i rescue DEFAULT_VIEW_COUNT # ←追加！！！！！
