@@ -37,4 +37,17 @@ window.onload = function() {
     let url = window.location.origin + window.location.pathname + '?view_count=' + target.value + '&page=1'; // ←追加！！！！！！！！！
     window.location.href = url; // ←追加！！！！！！！！！
   }); // ←追加！！！！！！！！！
+
+  let folder_links = document.getElementsByClassName('open_folder_link');
+  Array.from(folder_links).forEach(link => {
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+      let target = event.target;
+      let requestNumber = target.getAttribute('data-request-number');
+
+      var req = new XMLHttpRequest();
+      req.open('GET', '/open_csv_folder?reqeust_number=' + encodeURIComponent(requestNumber), true);
+      req.send(null);
+    });
+  });
 };

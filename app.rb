@@ -5,6 +5,7 @@ require "sinatra/activerecord"
 #require 'sinatra/bootstrap'
 require 'fileutils'
 require 'active_support/all'
+require 'logger' # ←追加！！！！！
 
 require 'sinatra/flash'
 
@@ -19,6 +20,18 @@ require_relative './jobs/record_request_job'
 
 require 'bundler'
 Bundler.require
+
+# ログ設定
+log_file = File.join("C:\\Users\\07k11\\Desktop\\work\\sinatratest", 'log', 'sinatra.log') # ←追加！！！！！
+logger = Logger.new(log_file, 'daily') # ←追加！！！！！
+
+configure do # ←追加！！！！！
+  set :logger, logger # ←追加！！！！！
+end # ←追加！！！！！
+
+before do # ←追加！！！！！
+  logger.info "#{request.request_method} #{request.path} - Params: #{params}" # ←追加！！！！！
+end # ←追加！！！！！
 
 enable :sessions
 
@@ -53,6 +66,7 @@ DEFAULT_VIEW_COUNT = 10#300 # ←追加！！！！！
 
 get '/csv_test' do
   estimates = Estimate.all.order(created_at: :desc)
+  @pathname = "C:\\"
   @page = (params[:page] || 1).to_i rescue 1
   @full_count = estimates.size # ←追加！！！！！
   @view_count = (params[:view_count] || DEFAULT_VIEW_COUNT).to_i rescue DEFAULT_VIEW_COUNT # ←追加！！！！！
@@ -72,16 +86,14 @@ post '/csv_test_create' do
   redirect to "/csv_test"
 end
 
-get '/download_csv' do
-  redirect to "/csv_test" if params[:filename].blank? # ←追加！！！！！
-
-  filename = params[:filename].to_s # ←追加！！！！！
-  src = "C:\\Users\\07k11\\Desktop\\work\\sinatratest\\#{filename}" # ←追加！！！！！
-  destination = "C:\\Users\\07k11\\Desktop\\整理中\\#{filename}" # ←追加！！！！！
-  FileUtils.cp(src, destination) # ←追加！！！！！
-
-  flash[:success] = "CSVファイル「#{filename}」をダウンロードしました" # ←追加！！！！！
-  redirect to "/csv_test##{params[:id]}" # ←追加！！！！！
+# 以下、追加！！！！！(パス書き換えは必要)
+# APIとしてJSから呼び出し
+# 結果がダウンロードされるフォルダを開く
+get '/open_csv_folder' do
+  reqeust_number = params[:reqeust_number].to_s
+  logger.info reqeust_number
+  folder_path = "C:\\Users\\07k11\\Desktop\\整理中"
+  system("explorer #{folder_path}")
 end
 
 

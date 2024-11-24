@@ -80,7 +80,7 @@
             <tbody>
               <% @list.each do |estimate| %>
                 <tr>
-                  <td id="<%= estimate.id %>"><a href="/download_csv?filename=<%= "test.csv" %>&id=<%= estimate.id %>"><%= estimate.number %></a></td>
+                  <td id="<%= estimate.id %>"><a href="#" class="open_folder_link" data-request-number="<%= estimate.number %>"><%= estimate.number %></a></td>
                   <td><%= status_string(estimate.status) %></td>
                   <td><%= estimate.csv_filename %></td>
                   <td><%= estimate.created_at.in_time_zone('Tokyo').strftime('%Y-%m-%d %H:%M:%S') %></td>
