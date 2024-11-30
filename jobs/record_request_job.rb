@@ -27,7 +27,7 @@ class RecordRequestJob
     end
 
     # pythonスクリプトの実行
-    result = system('python .\test.py')
+    result = system('python -m pscript.main')
     puts result
 
     Estimate.where(number: @request_numbers, status: 1, created_at: @start_time..@end_time).update_all(status: 2) # ←修正！！！！！

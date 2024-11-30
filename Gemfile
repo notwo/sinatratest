@@ -3,8 +3,8 @@
 source "https://rubygems.org"
 
 gem 'sinatra'
-gem "rackup"
-gem "puma"
+gem 'rackup'
+gem 'puma'
 gem 'sinatra-contrib'
 
 gem 'sinatra-flash'
